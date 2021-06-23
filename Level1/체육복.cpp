@@ -3,26 +3,20 @@
 #include <algorithm>
 using namespace std;
 
-int solution(int n, vector<int> lost, vector<int> reserve) {
-    int answer = 0;
-    sort(lost.begin(), lost.end());
-    sort(reserve.begin(), reserve.end());
+int solution(int n, vector<int> lost, vector<int> reserve) {   
+    set<int> los(lost.begin(), lost.end());
+    vector<int> lendable;
+
+    for (auto r : reserve) {
+        if (los.count(r)) 
+            los.erase(r);   // 자신의 여벌 사용
+        else 
+            lendable.push_back(r);
+    }
     
-    vector<int> buff1(lost.size() + reserve.size());
-    auto iter1 = set_intersection(lost.begin(), lost.end(), reserve.begin(), reserve.end(), buff1.begin());
-    buff1.erase(iter1, buff1.end());
+    lost.assign(los.begin(), los.end());
     
-    vector<int> buff2(lost.size() + reserve.size());
-    auto iter2 = set_difference(lost.begin(), lost.end(), buff1.begin(), buff1.end(), buff2.begin());
-    buff2.erase(iter2, buff2.end());
-    lost = buff2;
-    
-    vector<int> buff3(lost.size() + reserve.size());
-    auto iter3 = set_difference(reserve.begin(), reserve.end(), buff1.begin(), buff1.end(), buff3.begin());
-    buff3.erase(iter3, buff3.end());
-    reserve = buff3;
-    
-    for(auto stu:reserve){
+    for(auto stu:lendable){
         for(int i=0;i<lost.size();i++){
             if(lost[i]==stu-1 || lost[i]==stu+1){
                 lost.erase(lost.begin()+i);
@@ -31,6 +25,5 @@ int solution(int n, vector<int> lost, vector<int> reserve) {
         }
     }
 
-    answer = n - lost.size();
-    return answer;
+    return n - lost.size();
 }
