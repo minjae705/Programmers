@@ -14,6 +14,6 @@ int solution(vector<vector<string>> clothes) {
     }
     for(auto y:m)
         if(y.second!=0)
-            answer *= (y.second+1);
-    return answer-1;
+            answer *= (y.second+1); //이 종류의 옷을 안입는 경우 +1
+    return answer-1; //아무것도 안입는 경우 -1
 }
