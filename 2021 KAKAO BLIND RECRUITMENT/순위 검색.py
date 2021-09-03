@@ -1,83 +1,88 @@
-def lower_bound(nums, target):
-    left, right = 0, len(nums)
-    while left < right:  
-        mid = left + (right - left) // 2
-        if nums[mid] < target:
-            left = mid + 1
-        else:
-            right = mid
-    return right
-
 def solution(info, query):
-    answer = [0 for i in range(len(query))]
-    apply = [[] for i in range(24)]
+    data = dict()
+    for a in ['cpp', 'java', 'python', '-']:
+        for b in ['backend', 'frontend', '-']:
+            for c in ['junior', 'senior', '-']:
+                for d in ['chicken', 'pizza', '-']:
+                    data.setdefault((a, b, c, d), list())
     for i in info:
-        tmpi = list(i.split(' '))
-        spot = 24
-        if tmpi[0] == 'cpp':
-            spot = spot//3
-        elif tmpi[0] == 'java':
-            spot = spot//3*2
-        if tmpi[1] == 'backend':
-            spot -= 4
-        if tmpi[2] == 'junior':
-            spot -= 2
-        if tmpi[3] == 'chicken':
-            spot -= 1
-        spot -= 1
-        apply[spot].append(int(tmpi[4]))
-    
-    now = 0
+        i = i.split()
+        for a in [i[0], '-']:
+            for b in [i[1], '-']:
+                for c in [i[2], '-']:
+                    for d in [i[3], '-']:
+                        data[(a, b, c, d)].append(int(i[4]))
+
+    for k in data:
+        data[k].sort()
+
+        # print(k, data[k])
+
+    answer = list()
     for q in query:
-        qchk = [0 for i in range(24)]
-        tmpq = list(q.split(' and '))
-        tmpq += list(tmpq[3].split(' '))
-        del tmpq[3]
-        
-        if tmpq[0] == 'cpp':
-            for i in range(0,8):
-                qchk[i] = 1
-        elif tmpq[0] == 'java':
-            for i in range(8,16):
-                qchk[i] = 1
-        elif tmpq[0] == 'python':
-            for i in range(16,24):
-                qchk[i] = 1
-        else:
-            for i in range(0,24):
-                qchk[i] = 1
+        q = q.split()
+
+        pool = data[(q[0], q[2], q[4], q[6])]
+        find = int(q[7])
+        l = 0
+        r = len(pool)
+        mid = 0
+        while l < r:
+            mid = (r+l)//2
+            if pool[mid] >= find:
+                r = mid
+            else:
+                l = mid+1
                 
-        if tmpq[1] == 'backend':
-            for i in range(0,24):
-                if i//4%2 == 1:
-                    qchk[i] = 0
-        elif tmpq[1] == 'frontend':
-            for i in range(0,24):
-                if i//4%2 == 0:
-                    qchk[i] = 0
-                    
-        if tmpq[2] == 'junior':
-            for i in range(0,24):
-                if i//2%2 == 1:
-                    qchk[i] = 0
-        elif tmpq[2] == 'senior':
-            for i in range(0,24):
-                if i//2%2 == 0:
-                    qchk[i] = 0
-                    
-        if tmpq[3] == 'chicken':
-            for i in range(0,24):
-                if i%2 == 1:
-                    qchk[i] = 0
-        elif tmpq[3] == 'pizza':
-            for i in range(0,24):
-                if i%2 == 0:
-                    qchk[i] = 0
-        
-        for c in range(24):
-            if qchk[c] == 1 and len(apply[c]) > 0:
-                idx = lower_bound(sorted(apply[c]), int(tmpq[4]))
-                answer[now] += len(apply[c]) - idx
-        now += 1 
-        
+        answer.append(len(pool)-l)
+
     return answer
+
+# from itertools import combinations
+# from collections import defaultdict
+
+# def solution(info, query):
+#     answer = []
+#     info_dict = defaultdict(list)
+#     for i in info:
+#         temp = i.split(" ")
+#         key = temp[0:-1]
+#         score = int(temp[-1])
+
+#         for r in range(5):
+#             combi = list(combinations(key, r))
+#             for c in combi:
+#                 temp_key = ''.join(c)
+#                 info_dict[temp_key].append(score)
+                
+#     for key in info_dict.keys():
+#         info_dict[key].sort()
+
+#     for q in query:
+#         q = q.split(" ")
+#         query_score = int(q[-1])
+#         query_key = q[:-1]
+
+#         for _ in range(3):
+#             query_key.remove("and")
+
+#         while "-" in query_key:
+#             query_key.remove("-")
+#         query_key = ''.join(query_key)
+
+#         if query_key in info_dict:
+#             scoreList = info_dict[query_key]
+
+#             if len(scoreList) > 0:
+#                 left, right = 0, len(scoreList)
+#                 while left < right:
+#                     mid = (left + right) // 2
+#                     if scoreList[mid] >= query_score:
+#                         right = mid
+#                     else:
+#                         left = mid+1
+#                 answer.append(len(scoreList)-left)
+#         else:
+#             answer.append(0)
+
+#     return answer
